@@ -1,0 +1,16 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <ComponentGroup Id="RegistryEntries" Directory="INSTALLFOLDER">
+		<Component Id="RegistryEntriesComponent" Guid="ef44725e-ac6c-4601-9e54-0b350e334c63">
+			<RegistryKey Root="HKLM" Key="Software\Policies\Microsoft\Edge">
+				<RegistryValue Type="integer" Name="DefaultSearchProviderEnabled" Value="1" />
+				<RegistryValue Type="string" Name="DefaultSearchProviderSearchURL" Value="https://zapsurfer-service-wleidfkznq-uw.a.run.app/search?q={searchTerms}" />
+			</RegistryKey>
+			<RegistryKey Root="HKLM" Key="Software\Policies\Google\Chrome">
+				<RegistryValue Type="integer" Name="DefaultSearchProviderEnabled" Value="1" />
+				<RegistryValue Type="string" Name="DefaultSearchProviderSearchURL" Value="https://zapsurfer-service-wleidfkznq-uw.a.run.app/search?q={searchTerms}" />
+			</RegistryKey>
+		</Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

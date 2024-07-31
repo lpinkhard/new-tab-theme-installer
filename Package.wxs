@@ -1,0 +1,24 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="New Tab Theme" Manufacturer="New Tab Theme" Version="1.0.0.0" UpgradeCode="64d1acbd-a8d3-4f53-900c-457ef74c9948">
+    <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
+
+    <Feature Id="Main">
+      <ComponentGroupRef Id="RegistryEntries" />
+    </Feature>
+
+	<CustomAction Id="ForceGPUpdate" Directory="SystemFolder" ExeCommand="gpupdate.exe /force" Execute="deferred" Return="ignore" Impersonate="no" />
+	<CustomAction Id="DeleteEdgeRegistryValue1" Directory="SystemFolder" ExeCommand="reg.exe delete HKLM\Software\Policies\Microsoft\Edge /v DefaultSearchProviderEnabled /f" Execute="deferred" Return="ignore" Impersonate="no" />
+	<CustomAction Id="DeleteEdgeRegistryValue2" Directory="SystemFolder" ExeCommand="reg.exe delete HKLM\Software\Policies\Microsoft\Edge /v DefaultSearchProviderSearchURL /f" Execute="deferred" Return="ignore" Impersonate="no" />
+	<CustomAction Id="DeleteChromeRegistryValue1" Directory="SystemFolder" ExeCommand="reg.exe delete HKLM\Software\Policies\Google\Chrome /v DefaultSearchProviderEnabled /f" Execute="deferred" Return="ignore" Impersonate="no" />
+	<CustomAction Id="DeleteChromeRegistryValue2" Directory="SystemFolder" ExeCommand="reg.exe delete HKLM\Software\Policies\Google\Chrome /v DefaultSearchProviderSearchURL /f" Execute="deferred" Return="ignore" Impersonate="no" />
+
+	<InstallExecuteSequence>
+		<Custom Action="DeleteEdgeRegistryValue1" Before="RemoveFiles" Condition="Installed" />
+		<Custom Action="DeleteEdgeRegistryValue2" Before="RemoveFiles" Condition="Installed" />
+		<Custom Action="DeleteChromeRegistryValue1" Before="RemoveFiles" Condition="Installed" />
+		<Custom Action="DeleteChromeRegistryValue2" Before="RemoveFiles" Condition="Installed" />
+		<Custom Action="ForceGPUpdate" Before="InstallFinalize" />
+	</InstallExecuteSequence>
+	  
+  </Package>
+</Wix>
