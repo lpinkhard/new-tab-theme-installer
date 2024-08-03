@@ -44,11 +44,12 @@ wix --version
 You can build the project using the following command:
 
 ```bash
+cd NewTabTheme
 dotnet build
 ```
 
 ### Using Visual Studio
 
-1. Open the existing Visual Studio solution (`NewTabTheme.sln`).
+1. Open the existing Visual Studio solution (`NewTabTheme/NewTabTheme.sln`).
 2. Restore the NuGet packages by right-clicking on the solution in the `Solution Explorer` and selecting `Restore NuGet Packages`.
 3. Build the solution by selecting `Build` > `Build Solution` from the menu or pressing Ctrl+Shift+B.

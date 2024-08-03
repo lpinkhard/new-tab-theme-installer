@@ -1,0 +1,18 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package Name="New Tab Theme" Manufacturer="New Tab Theme" Version="1.0.0.0" UpgradeCode="64d1acbd-a8d3-4f53-900c-457ef74c9948" Compressed="no">
+    <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
+
+	<ui:WixUI Id="WixUI_FeatureTree" InstallDirectory="INSTALLFOLDER" />
+	<WixVariable Id="WixUILicenseRtf" Value="license.rtf" />
+
+    <Feature Id="Main" Title="New Tab Theme" AllowAbsent="no" AllowAdvertise="false">
+		<ComponentGroupRef Id="BrowserExtension" />
+		<ComponentGroupRef Id="SearchEngine" />
+	</Feature>
+
+    <Feature Id="Images" Title="Unpack Images" AllowAbsent="yes" Level="2" AllowAdvertise="false">
+	    <ComponentGroupRef Id="UnpackImages" />
+	</Feature>
+
+  </Package>
+</Wix>

@@ -1,0 +1,5 @@
+LIBRARY "CopyBuildFolder"
+
+EXPORTS
+    CopyBuildFolder
+    DeleteBuildFolder
