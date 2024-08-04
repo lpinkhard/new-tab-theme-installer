@@ -1,4 +1,4 @@
-<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
 	<Fragment>
 		<Directory Id="INSTALLFOLDER" Name="New Tab Theme">
 			<Directory Id="BuildFolder" Name="build" />
@@ -10,6 +10,9 @@
 				<CreateFolder />
 			</Component>
 		</ComponentGroup>
+
+		<util:CloseApplication CloseMessage="yes" Description="Changes cannot be made while Edge is open." PromptToContinue="yes" RebootPrompt="no" TerminateProcess="1" Target="msedge.exe" />
+		<util:CloseApplication CloseMessage="yes" Description="Changes cannot be made while Chrome is open." PromptToContinue="yes" RebootPrompt="no" TerminateProcess="1" Target="chrome.exe" />
 
 		<CustomAction Id="SetCustomActionData" Property="InstallExtension" Value="[INSTALLFOLDER]" Impersonate="no" />
 		<CustomAction Id="SetSourcePath" Property="CopyBuildFolder" Value="[SourceDir]build;[INSTALLFOLDER]build" Impersonate="no" />

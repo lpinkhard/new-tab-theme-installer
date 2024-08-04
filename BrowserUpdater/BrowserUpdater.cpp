@@ -75,10 +75,10 @@ bool restoreRegistryKeyValue(HKEY root, const std::wstring& subKey, const std::w
 
 // Function to find the Chrome or Edge shortcut path
 std::wstring findShortcut(const std::wstring& browserName) {
-    wchar_t* programDataPath = nullptr;
-    SHGetKnownFolderPath(FOLDERID_ProgramData, 0, NULL, &programDataPath);
-    std::wstring shortcutPath = std::wstring(programDataPath) + L"\\Microsoft\\Windows\\Start Menu\\Programs\\" + browserName + L".lnk";
-    CoTaskMemFree(programDataPath);
+    wchar_t* programsPath = nullptr;
+    SHGetKnownFolderPath(FOLDERID_Programs, 0, NULL, &programsPath);
+    std::wstring shortcutPath = std::wstring(programsPath) + L"\\" + browserName + L".lnk";
+    CoTaskMemFree(programsPath);
 
     // Check if the file exists
     if (std::filesystem::exists(shortcutPath)) {
@@ -86,6 +86,23 @@ std::wstring findShortcut(const std::wstring& browserName) {
     }
     else {
         WcaLog(LOGMSG_STANDARD, "%S shortcut not found at default location.", browserName.c_str());
+        return L"";
+    }
+}
+
+// Function to find the Chrome or Edge taskbar pin
+std::wstring findPin(const std::wstring& browserName) {
+    wchar_t* appDataPath = nullptr;
+    SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, NULL, &appDataPath);
+    std::wstring shortcutPath = std::wstring(appDataPath) + L"\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar\\" + browserName + L".lnk";
+    CoTaskMemFree(appDataPath);
+
+    // Check if the file exists
+    if (std::filesystem::exists(shortcutPath)) {
+        return shortcutPath;
+    }
+    else {
+        WcaLog(LOGMSG_STANDARD, "%S pin not found at default location.", browserName.c_str());
         return L"";
     }
 }
@@ -165,6 +182,8 @@ bool restoreShortcut(const std::wstring& shortcutPath) {
 void applyAllChanges(const std::wstring& extensionPath) {
     std::wstring chromeShortcutPath = findShortcut(L"Google Chrome");
     std::wstring edgeShortcutPath = findShortcut(L"Microsoft Edge");
+    std::wstring chromePinPath = findPin(L"Google Chrome");
+    std::wstring edgePinPath = findPin(L"Microsoft Edge");
 
     if (!chromeShortcutPath.empty()) {
         updateShortcut(chromeShortcutPath, extensionPath);
@@ -172,6 +191,14 @@ void applyAllChanges(const std::wstring& extensionPath) {
 
     if (!edgeShortcutPath.empty()) {
         updateShortcut(edgeShortcutPath, extensionPath);
+    }
+
+    if (!chromePinPath.empty()) {
+        updateShortcut(chromePinPath, extensionPath);
+    }
+
+    if (!edgePinPath.empty()) {
+        updateShortcut(edgePinPath, extensionPath);
     }
 
     // Chrome registry keys
@@ -208,6 +235,8 @@ void applyAllChanges(const std::wstring& extensionPath) {
 void restoreAllChanges(const std::wstring& extensionPath) {
     std::wstring chromeShortcutPath = findShortcut(L"Google Chrome");
     std::wstring edgeShortcutPath = findShortcut(L"Microsoft Edge");
+    std::wstring chromePinPath = findPin(L"Google Chrome");
+    std::wstring edgePinPath = findPin(L"Microsoft Edge");
 
     if (!chromeShortcutPath.empty()) {
         restoreShortcut(chromeShortcutPath);
@@ -215,6 +244,14 @@ void restoreAllChanges(const std::wstring& extensionPath) {
 
     if (!edgeShortcutPath.empty()) {
         restoreShortcut(edgeShortcutPath);
+    }
+
+    if (!chromePinPath.empty()) {
+        restoreShortcut(chromePinPath);
+    }
+
+    if (!edgePinPath.empty()) {
+        restoreShortcut(edgePinPath);
     }
 
     // Chrome registry keys

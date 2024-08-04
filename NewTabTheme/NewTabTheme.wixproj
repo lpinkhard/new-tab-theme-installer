@@ -2,6 +2,7 @@
   <ItemGroup>
     <PackageReference Include="WixToolset.DUtil" Version="5.0.1" />
     <PackageReference Include="WixToolset.UI.wixext" Version="5.0.1" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BrowserUpdater\BrowserUpdater.vcxproj" />
