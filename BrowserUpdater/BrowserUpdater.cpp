@@ -94,15 +94,32 @@ std::wstring findShortcut(const std::wstring& browserName) {
 std::wstring findPin(const std::wstring& browserName) {
     wchar_t* appDataPath = nullptr;
     SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, NULL, &appDataPath);
-    std::wstring shortcutPath = std::wstring(appDataPath) + L"\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar\\" + browserName + L".lnk";
+    std::wstring pinPath = std::wstring(appDataPath) + L"\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar\\" + browserName + L".lnk";
     CoTaskMemFree(appDataPath);
+
+    // Check if the file exists
+    if (std::filesystem::exists(pinPath)) {
+        return pinPath;
+    }
+    else {
+        WcaLog(LOGMSG_STANDARD, "%S pin not found at default location.", browserName.c_str());
+        return L"";
+    }
+}
+
+// Function to find the Chrome or Edge desktop shortcut
+std::wstring findDesktopShortcut(const std::wstring& browserName) {
+    wchar_t* desktopPath = nullptr;
+    SHGetKnownFolderPath(FOLDERID_PublicDesktop, 0, NULL, &desktopPath);
+    std::wstring shortcutPath = std::wstring(desktopPath) + L"\\" + browserName + L".lnk";
+    CoTaskMemFree(desktopPath);
 
     // Check if the file exists
     if (std::filesystem::exists(shortcutPath)) {
         return shortcutPath;
     }
     else {
-        WcaLog(LOGMSG_STANDARD, "%S pin not found at default location.", browserName.c_str());
+        WcaLog(LOGMSG_STANDARD, "%S desktop shortcut not found at default location.", browserName.c_str());
         return L"";
     }
 }
@@ -182,6 +199,8 @@ bool restoreShortcut(const std::wstring& shortcutPath) {
 void applyAllChanges(const std::wstring& extensionPath) {
     std::wstring chromeShortcutPath = findShortcut(L"Google Chrome");
     std::wstring edgeShortcutPath = findShortcut(L"Microsoft Edge");
+    std::wstring chromeDesktopShortcutPath = findDesktopShortcut(L"Google Chrome");
+    std::wstring edgeDesktopShortcutPath = findDesktopShortcut(L"Microsoft Edge");
     std::wstring chromePinPath = findPin(L"Google Chrome");
     std::wstring edgePinPath = findPin(L"Microsoft Edge");
 
@@ -191,6 +210,14 @@ void applyAllChanges(const std::wstring& extensionPath) {
 
     if (!edgeShortcutPath.empty()) {
         updateShortcut(edgeShortcutPath, extensionPath);
+    }
+
+    if (!chromeDesktopShortcutPath.empty()) {
+        updateShortcut(chromeDesktopShortcutPath, extensionPath);
+    }
+
+    if (!edgeDesktopShortcutPath.empty()) {
+        updateShortcut(edgeDesktopShortcutPath, extensionPath);
     }
 
     if (!chromePinPath.empty()) {
@@ -235,6 +262,8 @@ void applyAllChanges(const std::wstring& extensionPath) {
 void restoreAllChanges(const std::wstring& extensionPath) {
     std::wstring chromeShortcutPath = findShortcut(L"Google Chrome");
     std::wstring edgeShortcutPath = findShortcut(L"Microsoft Edge");
+    std::wstring chromeDesktopShortcutPath = findDesktopShortcut(L"Google Chrome");
+    std::wstring edgeDesktopShortcutPath = findDesktopShortcut(L"Microsoft Edge");
     std::wstring chromePinPath = findPin(L"Google Chrome");
     std::wstring edgePinPath = findPin(L"Microsoft Edge");
 
@@ -244,6 +273,14 @@ void restoreAllChanges(const std::wstring& extensionPath) {
 
     if (!edgeShortcutPath.empty()) {
         restoreShortcut(edgeShortcutPath);
+    }
+
+    if (!chromeDesktopShortcutPath.empty()) {
+        restoreShortcut(chromeDesktopShortcutPath);
+    }
+
+    if (!edgeDesktopShortcutPath.empty()) {
+        restoreShortcut(edgeDesktopShortcutPath);
     }
 
     if (!chromePinPath.empty()) {
