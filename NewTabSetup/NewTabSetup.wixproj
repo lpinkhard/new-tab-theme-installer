@@ -1,6 +1,9 @@
 ﻿<Project Sdk="WixToolset.Sdk/5.0.1">
   <PropertyGroup>
     <OutputType>Package</OutputType>
+    <SignOutput>true</SignOutput>
+    <SignCertificate>TestCertificate.pfx</SignCertificate>
+    <SignPassword>password</SignPassword>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="WixToolset.DUtil" Version="5.0.1" />
@@ -11,4 +14,8 @@
     <ProjectReference Include="..\BrowserUpdater\BrowserUpdater.vcxproj" />
     <ProjectReference Include="..\CopyBuildFolder\CopyBuildFolder.vcxproj" />
   </ItemGroup>
+  <Target Name="SignMsi">
+    <Message Importance="high" Text="SignMsi: @(SignMsi)" />
+    <Exec Command='"C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe" sign /v /f $(SignCertificate) /p $(SignPassword) "%(SignMsi.FullPath)" ' />
+  </Target>
 </Project>
