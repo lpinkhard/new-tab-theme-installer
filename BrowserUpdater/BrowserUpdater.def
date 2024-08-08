@@ -3,3 +3,4 @@ LIBRARY "BrowserUpdater"
 EXPORTS
     InstallExtension
     UninstallExtension
+    ExecutePolicyUpdate

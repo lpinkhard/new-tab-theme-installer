@@ -7,6 +7,7 @@
 #include <string>
 #include <filesystem>
 #include <vector>
+#include <process.h> // Include for process creation
 
 #pragma comment(lib, "shell32.lib")
 
@@ -22,6 +23,16 @@ bool setRegistryKeyValue(HKEY root, const std::wstring& subKey, const std::wstri
     DWORD size = static_cast<DWORD>(currentValue.size() * sizeof(wchar_t));
     RegQueryValueEx(hKey, nullptr, nullptr, nullptr, reinterpret_cast<LPBYTE>(&currentValue[0]), &size);
     currentValue.resize(size / sizeof(wchar_t) - 1);
+
+    // Remove "--single-argument" if present
+    std::wstring::size_type startPos = currentValue.find(L"--single-argument");
+    if (startPos != std::wstring::npos) {
+        std::wstring::size_type endPos = currentValue.find(L" ", startPos + 16); // Find the end of the parameter
+        if (endPos == std::wstring::npos) {
+            endPos = currentValue.size();
+        }
+        currentValue.erase(startPos, endPos - startPos); // Remove the parameter
+    }
 
     // Add new argument if not already present
     if (currentValue.find(L"--load-extension") == std::wstring::npos) {
@@ -76,8 +87,8 @@ bool restoreRegistryKeyValue(HKEY root, const std::wstring& subKey, const std::w
 // Function to find the Chrome or Edge shortcut path
 std::wstring findShortcut(const std::wstring& browserName) {
     wchar_t* programsPath = nullptr;
-    SHGetKnownFolderPath(FOLDERID_Programs, 0, NULL, &programsPath);
-    std::wstring shortcutPath = std::wstring(programsPath) + L"\\" + browserName + L".lnk";
+    SHGetKnownFolderPath(FOLDERID_ProgramData, 0, NULL, &programsPath);
+    std::wstring shortcutPath = std::wstring(programsPath) + L"\\Microsoft\\Windows\\Start Menu\\Programs\\" + browserName + L".lnk";
     CoTaskMemFree(programsPath);
 
     // Check if the file exists
@@ -193,6 +204,39 @@ bool restoreShortcut(const std::wstring& shortcutPath) {
     CoUninitialize();
 
     return SUCCEEDED(hres);
+}
+
+// Function to run a command line process
+bool runCommand(const std::wstring& command) {
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
+
+    if (!CreateProcess(
+        NULL,
+        const_cast<LPWSTR>(command.c_str()),
+        NULL,
+        NULL,
+        FALSE,
+        CREATE_NO_WINDOW,
+        NULL,
+        NULL,
+        &si,
+        &pi)) {
+        WcaLog(LOGMSG_STANDARD, "Failed to run command: %S", command.c_str());
+        return false;
+    }
+
+    // Wait for the process to complete
+    WaitForSingleObject(pi.hProcess, INFINITE);
+
+    // Close process and thread handles
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+
+    return true;
 }
 
 // Function to apply all changes
@@ -321,6 +365,11 @@ void restoreAllChanges(const std::wstring& extensionPath) {
     }
 }
 
+// Function to execute gpupdate /force
+bool ExecutePolicyUpdate() {
+    return runCommand(L"gpupdate /force");
+}
+
 UINT __stdcall InstallExtension(
     __in MSIHANDLE hInstall
 )
@@ -341,7 +390,7 @@ UINT __stdcall InstallExtension(
     ExitOnFailure(hr, "Failed to get installation directory");
 
     // Construct the path to the 'build' folder inside the installation directory
-    extensionPath = std::wstring(szInstallDir) + L"\\build";
+    extensionPath = std::wstring(szInstallDir);
 
     WcaLog(LOGMSG_STANDARD, "Applying changes for extension path: %S", extensionPath.c_str());
     applyAllChanges(extensionPath);
@@ -372,7 +421,7 @@ UINT __stdcall UninstallExtension(
     ExitOnFailure(hr, "Failed to get installation directory");
 
     // Construct the path to the 'build' folder inside the installation directory
-    extensionPath = std::wstring(szInstallDir) + L"\\build";
+    extensionPath = std::wstring(szInstallDir);
 
     WcaLog(LOGMSG_STANDARD, "Restoring changes for extension path: %S", extensionPath.c_str());
     restoreAllChanges(extensionPath);

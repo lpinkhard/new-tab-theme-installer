@@ -1,0 +1,25 @@
+{
+  "number_of_images": 3,
+  "shortcuts": [
+    {
+      "title": "Google",
+      "url": "https://www.google.com/",
+      "position": 5
+    },
+    {
+      "title": "Outlook",
+      "url": "https://outlook.office365.com/",
+      "position": 6
+    },
+    {
+      "title": "Gmail",
+      "url": "https://mail.google.com/",
+      "position": 7
+    },
+    {
+      "title": "ChatGPT",
+      "url": "https://chat.openai.com/",
+      "position": 8
+    }
+  ]
+}

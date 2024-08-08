@@ -1,0 +1,12 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
+  <Bundle Name="New Tab Theme" Manufacturer="New Tab Theme" Version="1.0.0.0" UpgradeCode="d16f9dfe-69e2-4019-a2b6-7861b3995fd3" IconSourceFile="icon.ico">
+    <BootstrapperApplication>
+      <bal:WixStandardBootstrapperApplication LicenseFile="license.rtf" Theme="rtfLicense" LogoFile="icon.png" />
+    </BootstrapperApplication>
+
+    <Chain>
+		<MsiPackage SourceFile="NewTabSetup.msi" />
+    </Chain>
+
+  </Bundle>
+</Wix>
