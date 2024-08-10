@@ -1,0 +1,13 @@
+{
+  "name": "lambda-function",
+  "version": "1.0.0",
+  "description": "Lambda function to create SFX archive",
+  "main": "index.mjs",
+  "type": "module",
+  "scripts": {
+    "start": "node index.mjs"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1240.0"
+  }
+}
