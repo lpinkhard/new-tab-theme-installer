@@ -8,6 +8,21 @@ import { promisify } from 'util';
 const s3 = new AWS.S3();
 const execPromise = promisify(execCallback);
 
+// Helper function to clear a directory
+function clearDirectory(directoryPath) {
+    if (fs.existsSync(directoryPath)) {
+        fs.readdirSync(directoryPath).forEach(file => {
+            const currentPath = path.join(directoryPath, file);
+            if (fs.lstatSync(currentPath).isDirectory()) {
+                clearDirectory(currentPath);
+                fs.rmdirSync(currentPath);
+            } else {
+                fs.unlinkSync(currentPath);
+            }
+        });
+    }
+}
+
 // Main handler function
 export const handler = async (event) => {
     const tempDir = os.tmpdir();
@@ -33,6 +48,9 @@ export const handler = async (event) => {
     const outputKey = event.outputKey;
 
     try {
+        // Clear /tmp directory to prevent conflicts with previous runs
+        clearDirectory(tempDir);
+
         // Create build directory
         if (!fs.existsSync(buildDir)) {
             fs.mkdirSync(buildDir);
@@ -122,7 +140,7 @@ async function createArchiveWithStructure(buildDir, msiPath, archivePath) {
         fs.mkdirSync(buildFolder);
     }
 
-    // Move all files and directories to the 'build' folder, avoid moving 'temp' into itself
+    // Move all files and directories to the 'build' folder
     const files = fs.readdirSync(buildDir);
     files.forEach(file => {
         const filePath = path.join(buildDir, file);
